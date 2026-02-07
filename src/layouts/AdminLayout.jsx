@@ -1,7 +1,9 @@
 import React, { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
+import { motion } from "framer-motion";
 import Sidebar from "../components/Sidebar";
 
+/* ---------------- TOPBAR ---------------- */
 const Topbar = memo(function Topbar() {
   const location = useLocation();
   const [open, setOpen] = useState(false);
@@ -35,7 +37,7 @@ const Topbar = memo(function Topbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/80 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-slate-200/70 bg-white/80 backdrop-blur-md">
       <div className="px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3 min-w-0">
           <h1 className="truncate text-xl font-semibold tracking-tight text-slate-900">
@@ -79,7 +81,7 @@ const Topbar = memo(function Topbar() {
           </button>
 
           <div
-            className={`absolute right-0 top-[52px] w-52 rounded-2xl border border-slate-200 bg-white shadow-lg
+            className={`absolute right-0 top-[52px] w-56 rounded-2xl border border-slate-200 bg-white shadow-lg
                         transition-all duration-200 origin-top-right
                         ${open ? "opacity-100 scale-100" : "opacity-0 scale-95 pointer-events-none"}`}
           >
@@ -112,10 +114,54 @@ const Topbar = memo(function Topbar() {
   );
 });
 
+/* ---------------- FOOTER (at bottom + attractive) ---------------- */
+function Footer() {
+  return (
+    <motion.footer
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35 }}
+      className="relative mt-auto border-t border-slate-200/70 bg-white/80 backdrop-blur-md"
+    >
+      {/* subtle glow line */}
+      <div className="pointer-events-none absolute inset-x-0 -top-16 h-16 bg-gradient-to-b from-slate-900/5 to-transparent" />
+
+      <div className="max-w-7xl mx-auto px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm">
+        <p className="text-slate-600">
+          © {new Date().getFullYear()}{" "}
+          <span className="font-semibold text-slate-900">AdminPanel</span>. All
+          rights reserved.
+        </p>
+
+        <div className="flex items-center gap-5">
+          <a
+            href="#"
+            className="text-slate-600 hover:text-slate-900 transition-colors"
+          >
+            Privacy
+          </a>
+          <a
+            href="#"
+            className="text-slate-600 hover:text-slate-900 transition-colors"
+          >
+            Terms
+          </a>
+          <a
+            href="#"
+            className="text-slate-600 hover:text-slate-900 transition-colors"
+          >
+            Support
+          </a>
+        </div>
+      </div>
+    </motion.footer>
+  );
+}
+
+/* ---------------- LAYOUT ---------------- */
 export default function AdminLayout() {
   const [collapsed, setCollapsed] = useState(false);
 
-  // ✅ stable callback (helps memo components)
   const toggleCollapsed = useCallback(() => {
     setCollapsed((p) => !p);
   }, []);
@@ -124,16 +170,16 @@ export default function AdminLayout() {
     <div className="flex min-h-screen bg-slate-50">
       <Sidebar collapsed={collapsed} toggleCollapsed={toggleCollapsed} />
 
-      <div className="flex-1 flex flex-col min-w-0">
+      {/* ✅ make right side column, footer pushes to bottom */}
+      <div className="flex-1 min-w-0 flex flex-col">
         <Topbar />
 
-        <main className="p-6">
+        {/* ✅ flex-1 ensures content takes remaining height, footer stays bottom */}
+        <main className="flex-1 p-6">
           <Outlet />
         </main>
 
-        <footer className="border-t border-slate-200 bg-white/80 backdrop-blur-md p-4 text-center text-sm text-slate-500">
-          © 2025 AdminPanel. All rights reserved.
-        </footer>
+        <Footer />
       </div>
     </div>
   );
